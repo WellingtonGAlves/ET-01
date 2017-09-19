@@ -1,7 +1,7 @@
 <?php
 
 
-require_once("config.php");
+require_once("C:/xampp/htdocs/ET-01/Util/Config.php");
 
 
 //fecha conexao com MySqli
@@ -14,6 +14,7 @@ function dbClose($link){
 
 //abre conexão com Mysqli
 function dbConnect(){
+//    $link = mysqli_connect("localhost","root","","rastreador")or die(mysqli_connect_error());
     $link = mysqli_connect(DB_HOSTNAME,DB_USERNAME,DB_PASSWORD,DB_DATABASE)or die(mysqli_connect_error());
     //mysqli_set_charset($link, DB_CHARSET) or die(mysqli_error($link));
     //print_r($link);

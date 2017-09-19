@@ -15,14 +15,15 @@ and open the template in the editor.
             require_once("C:/xampp/htdocs/ET/Util/Connection.php");
             require_once("C:/xampp/htdocs/ET/Util/Database.php");
                 
-            //$link = dbConnect();
+            $link = dbConnect();
             //dbClose($link);
 //            $nome = "Well";
 //            $dados = array('nome'=>"lucas 'Pires'",'idade'=>"18");
 //            $query = "INSERT INTO CLIENTE (nome,idade)VALUES('Lucas Pires',18)";
 //            //var_dump(dbExecute($query));
-              print_r($link);
-            phpinfo();
+             
+            print_r($link);
+            //phpinfo();
         ?>
         </pre></body>
 </html>
