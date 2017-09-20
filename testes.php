@@ -92,7 +92,6 @@ echo "começando";
 //$implode .="#";
 //print_r($implode);
 
-(new MySocketServer())->run();
 
 
 

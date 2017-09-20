@@ -47,9 +47,13 @@
         }
     }    
     function lerMensagem($msg){
-    //*ET,SN,DW,A/V,YYMMDD,HHMMSS,Latitude,Longitude,Speed,Course,Status,Signal,Power,oil,LC#    
+    //*ET,SN,DW,A/V,YYMMDD,HHMMSS,Latitude,Longitude,Speed,Course,Status,Signal,Power,oil,LC#   
+    if ($msg=="JAVA") {
+        return "JAVA";
+    }
     $parts_msg = explode(',',$msg);
     $tot_parts = count($parts_msg);
+    echo "<p>_$tot_parts</p>";
     if($tot_parts==16){
         //está mandando sua localização
         $link = dbConnect();
@@ -62,7 +66,7 @@
            
             
             if (mysqli_num_rows($resultado_query)==0) {//verifica se o IMEI está cadastrado
-//                echo 'entrou no if para cadastrar';
+                echo 'entrou no if para cadastrar';
                 $cadastrou = cadastrarIMEI($parts_msg[1]);//cadastra IMEI
                 if ($cadastrou === true) {   //verifica se cadastrou IMEI
 //                    echo 'vai salvar localização';
@@ -97,8 +101,8 @@
 //                echo 'entrou no if para cadastrar';
                 $cadastrou = cadastrarIMEI($parts_msg[1]);//cadastra IMEI
                 if ($cadastrou === true) {   //verifica se cadastrou IMEI
-                    echo "cadastrou";
-                    dbExecute("UPDATE  `config_et` SET  `NUMERO_PRINCIPAL` =  '$msg[3]' WHERE  `IMEI` =  '$msg[1]]'");
+                    echo "cadastrou";                    
+                    dbExecute("UPDATE  `config_et` SET  `NUMERO_PRINCIPAL` =  '$msg[3]' WHERE  `IMEI` =  '$msg[1]]'");                    
                     return "atualizouNumeroPrincipal";                   
                 }else{
                     return "naoCadastrou/naoRegistrouNumeroPrincipal";
@@ -107,6 +111,18 @@
                 dbExecute("UPDATE  `config_et` SET  `NUMERO_PRINCIPAL` =  '$msg[3]' WHERE  `IMEI` =  '$msg[1]]'");
                 return "atualizouNumeroPrincipal";
             }       
+        }
+        if(explode("#", $parts_msg[2])){
+            echo "<p>_explode $parts_msg[2]</p>";
+            $posicaoUltimoCaracter = strlen ($msg[2]); 
+            $parts_msg[2] = substr($parts_msg[2], 0, $posicaoUltimoCaracter-1);
+//            print_r($msg[15]);
+            echo "<p>_explode Retirando $parts_msg[2]</p>";
+            
+        if ($parts_msg[2]=="MQ") {
+            echo "<br>return MQ<br>";
+            return "MQ";
+        }
         }
     }
     

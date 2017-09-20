@@ -1,103 +1,64 @@
 <?php
+    require_once ("C:/xampp/htdocs/ET-01/Util/Funcoes.php");
+    
+    error_reporting(0);
+    set_time_limit(0);
+    ob_implicit_flush();
+    $host = "192.168.25.216";
+    $port = 54321;
+    $socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create
+    socket<br>");
+    $result = socket_bind($socket,$host,54321) or die("Could not bind to
+    socket<br>");
+    $result = socket_listen($socket) or die("Could not set up socket
+    listener<br>");
+//    echo "Waiting for connections... <br>";
+    $cont = 0;
+    $qnt = 0;
 
-class MySocketServer
-{
-    protected $socket;
-    protected $clients = [];
-    protected $changed;
-    
-    function __construct($host = '192.168.25.216', $port = 54321)
+    while(1)
     {
-        set_time_limit(0);
-        $socket = socket_create(AF_INET, SOCK_STREAM, 0);
-        socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
+    $cont = $cont +1;
+    $spawn = socket_accept($socket) or die("Could not accept incoming
+    connection <br>");
+//    echo "| _".$cont."_ | <br>";
+    
+    
+    echo "<p>Rastreador Enviou : ".$msg."</p>";
+    while(@socket_recv($spawn,$buffer_resposta,1024,MSG_WAITALL)){
+		// RECEBER SOLICITACAO DO CLIENTE
+		echo "<br>Cliente diz : ".$buffer_resposta;
+		//%sql = mysql_query("$buffer_resposta");
+		// retorna consulta
+                // 
+                $en = "Seu registro foi guardado";
+                
+                echo "<br>enviou";
+                socket_write($spawn,$en,strlen($en));
+                socket_close($spawn);
+       }
+        
+    
+    
+    
+    if($cont == 5){
+            exit;
+    }
 
-        //bind socket to specified host
-        socket_bind($socket, 0, $port);
-        //listen to port
-        socket_listen($socket);
-        $this->socket = $socket;
     }
-    
-    function __destruct()
+    socket_close($socket);
+    $so = fsockopen('udp://pool.ntp.br', 123, $err_no, $err_str, 1);
+    if ($so)
     {
-        foreach($this->clients as $client) {
-            socket_close($client);
-        }
-        socket_close($this->socket);
-    }
-    
-    function run()
+    if (fwrite(so, chr(bindec('00'.sprintf('%03d', decbin(3)).'011')).str_repeat(chr(0x0), 39).pack('N', time()).pack("N", 0)))
     {
-        while(true) {
-            $this->waitForChange();
-            $this->checkNewClients();
-            $this->checkMessageRecieved();
-            $this->checkDisconnect();
-        }
+        stream_set_timeout($so, 1);
+        $unpack0 = unpack("N12", fread($so, 48));
+        echo date('Y-m-d H:i:s', $unpack0[7]);
     }
-    
-    function checkDisconnect()
-    {
-        foreach ($this->changed as $changed_socket) {
-            $buf = @socket_read($changed_socket, 1024, PHP_NORMAL_READ);
-            if ($buf !== false) { // check disconnected client
-                continue;
-            }
-            // remove client for $clients array
-            $found_socket = array_search($changed_socket, $this->clients);
-            socket_getpeername($changed_socket, $ip);
-            unset($this->clients[$found_socket]);
-            $response = 'client ' . $ip . ' has disconnected';
-            $this->sendMessage($response);
-        }
-    }
-    
-    function checkMessageRecieved()
-    {
-        foreach ($this->changed as $key => $socket) {
-            $buffer = null;
-            while(socket_recv($socket, $buffer, 1024, 0) >= 1) {
-                $this->sendMessage(trim($buffer) . PHP_EOL);
-                unset($this->changed[$key]);
-                break;
-            }
-        }
-    }
-    
-    function waitForChange()
-    {
-        //reset changed
-        $this->changed = array_merge([$this->socket], $this->clients);
-        //variable call time pass by reference req of socket_select
-        $null = null;
-        //this next part is blocking so that we dont run away with cpu
-        socket_select($this->changed, $null, $null, null);
-    }
-    
-    function checkNewClients()
-    {
-        if (!in_array($this->socket, $this->changed)) {
-            return; //no new clients
-        }
-        $socket_new = socket_accept($this->socket); //accept new socket
-        $first_line = socket_read($socket_new, 1024);
-        $this->sendMessage('a new client has connected' . PHP_EOL);
-        $this->sendMessage('the new client says ' . trim($first_line) . PHP_EOL);
-        $this->clients[] = $socket_new;
-        unset($this->changed[0]);
-    }
-    
-    
-    function sendMessage($msg)
-    {
-        foreach($this->clients as $client)
-        {
-            @socket_write($client,$msg,strlen($msg));
-        }
-        return true;
-    }
+
+    fclose($so);
 }
+    ?>		
 
-(new MySocketServer())->run();
-?>
+
