@@ -7,10 +7,13 @@ require_once("C:/xampp/htdocs/ET-01/Util/Config.php");
 //fecha conexao com MySqli
 
 function dbClose($link){
-    mysqli_close($link)or die($link);
-    
+    mysqli_close($link)or die($link);    
 }
-
+//abre e fecha conexao
+function dbConnectClose(){
+    $link = dbConnect();
+    mysqli_close($link)or die($link);    
+}
 
 //abre conexão com Mysqli
 function dbConnect(){

@@ -1,5 +1,16 @@
 <?php
-    require_once("C:/xampp/htdocs/ET-01/Util/Connection.php");
+    require_once("C:/xampp/htdocs/ET-01/dao/Connection.php");
+    
+    
+    function convertArrayToString($param) {//converte array para string
+       $string = implode(",", $param); 
+        return $string;
+    }
+    
+    function addHashtag($param) { //adiciona hashtag
+       $param.="#";
+        return $param;
+    }
     
     function cadastrarIMEI($imei) {
 //        echo '<br>entrou para cadastrar';
@@ -102,13 +113,15 @@
                 $cadastrou = cadastrarIMEI($parts_msg[1]);//cadastra IMEI
                 if ($cadastrou === true) {   //verifica se cadastrou IMEI
                     echo "cadastrou";                    
-                    dbExecute("UPDATE  `config_et` SET  `NUMERO_PRINCIPAL` =  '$msg[3]' WHERE  `IMEI` =  '$msg[1]]'");                    
+                    dbExecute("UPDATE  `config_et` SET  `NUMERO_PRINCIPAL` =  '$parts_msg[3]' WHERE  `IMEI` =  '$parts_msg[1]'");                    
                     return "atualizouNumeroPrincipal";                   
                 }else{
                     return "naoCadastrou/naoRegistrouNumeroPrincipal";
                 }
             }else{
-                dbExecute("UPDATE  `config_et` SET  `NUMERO_PRINCIPAL` =  '$msg[3]' WHERE  `IMEI` =  '$msg[1]]'");
+                dbConnectClose();
+                $respostaBanco = dbExecute("UPDATE  `config_et` SET  `NUMERO_PRINCIPAL` =  '$parts_msg[3]' WHERE  `IMEI` =  '$parts_msg[1]'");
+                echo "<br>_$respostaBanco _<br>";
                 return "atualizouNumeroPrincipal";
             }       
         }
@@ -126,33 +139,4 @@
         }
     }
     
-    function ouvindoRastreadores(string $host ,int $porta ){
-        error_reporting(0);
-        set_time_limit(0);
-//        $host = "192.168.25.216";
-//        $port = 54321;
-        $socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create
-        socket<br>");
-        $result_bind = socket_bind($socket,$host,$porta) or die("Could not bind to  socket<br>");
-        $result_listen = socket_listen($socket) or die("Could not set up socket
-        listener<br>");
-//      echo "Waiting for connections... <br>";
-        $cont = 0;
-        while(1)
-        {
-            $cont = $cont +1;
-            $spawn[++$i] = socket_accept($socket) or die("Could not accept incoming connection <br>");
-            $socket_read = socket_read($spawn[$i],1024);
-            $msg_rastreador = $socket_read;
-//          echo "<p>Rastreador Enviou : ".$msg_rastreador."</p>";
-//          echo "<p>Rastreador Enviou : </p>";
-            $retornoComando = lerMensagem($msg_rastreador);
-            print_r("<p>".$retornoComando."</p>");
-            socket_close($spawn[$i]);
-//         if($cont == 10){
-//             exit;
-//         }
-        }
-        socket_close($socket);
-        return "socketClose";
-    }
+    
