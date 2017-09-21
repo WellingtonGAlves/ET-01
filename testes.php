@@ -83,6 +83,17 @@ if ($pos === false) {
  echo "<br><br><br><br>$akiiiiiiiiii"."hdfsdhfsdkfjhdskjf";
     */
 echo "começando";
+    $result = dbExecute("SELECT  `COMANDO` FROM  `COMANDOS_RASTREADOR` WHERE  `IMEI` =  '$imei' and `EXECUTADO` = 'false'");
+    if($result->num_rows >0){
+        $result->data_seek(0);
+        echo "<table><tr><th>Comando</tr></th>";
+        while($row = $result->fetch_assoc()){
+            echo "<tr><td>".$row['comando']."</td></td>";
+        }
+        echo "</table>";
+    }else{
+        echo"nenhuma linha selecionada";
+    }
 //$msg = "*ET,135790246811221,RG,13691779574#";
 //$parts = explode(",", $msg);
 //print_r($parts);
