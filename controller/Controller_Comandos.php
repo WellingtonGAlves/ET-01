@@ -4,10 +4,10 @@
     error_reporting(0);
     set_time_limit(0);
     ob_implicit_flush();
-    $host = "192.168.25.216";
+    $host = "192.168.25.215";
     $port = 54321;
     $socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket<br>");
-    $result = socket_bind($socket,$host,54000) or die("Could not bind to  socket<br>");
+    $result = socket_bind($socket,$host,55555) or die("Could not bind to  socket<br>");
     $result = socket_listen($socket) or die("Could not set up socket  listener<br>");
     
 
@@ -21,10 +21,13 @@
          
          $spawn = socket_accept($socket) or die("Could not accept incoming connection <br>");
         
-         while(socket_recv($spawn,$buffer_enviado_rastreador,1024,MSG_WAITALL))
+         while($buffer_enviado_rastreador = socket_read($spawn,1024))
         {        
             $msg = trim($buffer_enviado_rastreador);
-            if($msg == "exit"){exit;}
+            if($msg == "exit"){
+                $msg = "exitou";
+                socket_write($spawn,$msg,strlen($msg));
+                exit;}
             echo "<p>Rastreador Enviou : ".$msg."</p>";
             $parts_msg = convertStringToArray($msg);
             /*
