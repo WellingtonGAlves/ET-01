@@ -77,11 +77,15 @@
         }
     }
     
+    //function removeHashtag($param) {
+       // $posicaoUltimoCaracter = strlen ($param); 
+       // $param = substr($param, 0, $posicaoUltimoCaracter-1);
+       // return $param;
+    //}
     function removeHashtag($param) {
-        $posicaoUltimoCaracter = strlen ($param[2]); 
-        $param[2] = substr($param[2], 0, $posicaoUltimoCaracter-1);
+        $param = str_replace('#', '', $param);
         return $param;
-}
+    }
     
     function convertArrayToString($param) {//converte array para string
        $string = implode(",", $param); 
@@ -102,73 +106,73 @@
     function checkComando($imei) {
         
 
-        $checkResultado = dbExecute("SELECT  `cmd` FROM  `cmd_trackers` WHERE  `imei` =  '$imei' and `sucesso` = 'false'");
+        $checkResultado = dbExecute("SELECT  `imei`,`cmd` FROM  `cmd_trackers` WHERE  `imei` =  '$imei' and `sucesso` = 'false'");
         //print_r($checkResultado);
         if($checkResultado->num_rows >0){ //VERIFICA SE VOLTOU ALGUM REGISTRO
             $checkResultado->data_seek(0);    
             while($row = $checkResultado->fetch_assoc()){    
                 $comandoPlataforma = $row['cmd']; // COMANDO É A COLUNA QUE ESTÁ NA TABELA
-                
+                $imeiPlataforma = $row['imei'];
                 $comandoPlataforma = trim($comandoPlataforma); //limpando espaços em branco
                 
                 $checkResultado = convertStringToArray($comandoPlataforma);
                 
                 //print_r($checkResultado);
                 if($checkResultado[0] == "cadastrarNumeroMaster"){// ----CADASTRAR O NUMERO MASTER DE MONITORAMENTO - ZH
-                $comando = "*ET,$checkResultado[1],ZH,$checkResultado[2]#";            
+                $comando = "*ET,$imeiPlataforma,ZH,$checkResultado[2]#";            
                 echo "<p>Servidor Respondeu :".$comando." --CADASTRAR O NUMERO MASTER DE MONITORAMENTO - ZH</p>";
                 return $comando;
                 }elseif($checkResultado[0] == "cadastrarNumeroSecundario"){// ----CADASTRAR NÚMERO DE MONITORAMENTO SECUNDÁRIO - FH
                     //$checkResultado[3] = str_replace(",", "", $checkResultado[3]);
-                    $comando = "*ET,$checkResultado[1],FH,$checkResultado[3],$checkResultado[2]#";                
+                    $comando = "*ET,$imeiPlataforma,FH,$checkResultado[3],$checkResultado[2]#";                
                     echo "<p>Servidor Respondeu :".$comando." --CADASTRAR NUMERO DE MONITORAMENTO SECUNDÁRIO - FH</p>";
                     return $comando;
                 }elseif($checkResultado[0] == "descadastrarNumeroSecundario"){// ----DESCADASTRAR NÚMERO DE MONITORAMENTO SECUNDÁRIO - FH
-                    $comando = "*ET,$checkResultado[1],FH,$checkResultado[3],$checkResultado[2]#";                
+                    $comando = "*ET,$imeiPlataforma,FH,$checkResultado[3],$checkResultado[2]#";                
                     echo "<p>Servidor Respondeu :".$comando." --DESCADASTRAR NÚMERO DE MONITORAMENTO SECUNDÁRIO - FH</p>";
                     return $comando;
                 }elseif($checkResultado[0] == "descadastrarTodosNumeroSecundario"){// ----DESCADASTRAR TODOS OS NÚMERO DE MONITORAMENTO SECUNDÁRIO - FH
-                    $comando = "*ET,$checkResultado[1],FH,$checkResultado[2]#";                
+                    $comando = "*ET,$imeiPlataforma,FH,$checkResultado[2]#";                
                     echo "<p>Servidor Respondeu :".$comando." --DESCADASTRAR TODOS OS NÚMERO DE MONITORAMENTO SECUNDÁRIO - FH</p>";
                     return $comando;
                 }elseif($checkResultado[0] == "ativarEconomiaEnergia"){// ----ATIVAR MODO DE ECONOMIA DE ENERGIA - PM
-                    $comando = "*ET,$checkResultado[1],PM,$checkResultado[2]#";                                
+                    $comando = "*ET,$imeiPlataforma,PM,$checkResultado[2]#";                                
                     echo "<p>Servidor Respondeu :".$comando." --ATIVAR MODO DE ECONOMIA DE ENERGIA - PM</p>";
                     return $comando;
                 }elseif($checkResultado[0] == "desativarEconomiaEnergia"){// ----DESATIVAR MODO DE ECONOMIA DE ENERGIA - PM
-                    $comando = "*ET,$checkResultado[1],PM,$checkResultado[2]#";                                
+                    $comando = "*ET,$imeiPlataforma,PM,$checkResultado[2]#";                                
                     echo "<p>Servidor Respondeu :".$comando." --DESATIVAR MODO DE ECONOMIA DE ENERGIA - PM</p>";
                     return $comando;
                 }elseif($checkResultado[0]=="ativarAntiRoubo") { //--ANTI-ROUBO ATIVADO - FD
-                    $comando = "*ET,".$checkResultado[1].",FD,F1#";                
+                    $comando = "*ET,".$imeiPlataforma.",FD,F1#";                
                     echo "<p>Servidor Respondeu :".$comando." --ANTI-ROUBO ATIVADO</p>";
                     return $comando;
                 }elseif($checkResultado[0]=="desativarAntiRoubo") { //--ANTI-ROUBO DESATIVADO - FD
-                    $comando = "*ET,".$checkResultado[1].",FD,F2#";                
+                    $comando = "*ET,".$imeiPlataforma.",FD,F2#";                
                     echo "<p>Servidor Respondeu :".$comando." --ANTI-ROUBO DESATIVADO</p>";
                     return $comando;
                 }elseif($checkResultado[0]=="desativaCombustivel") { //--DESATIVA COMBUSTIVEL - FD
-                    $comando = "*ET,".$checkResultado[1].",FD,Y1#";               
+                    $comando = "*ET,".$imeiPlataforma.",FD,Y1#";               
                     echo "<p>Servidor Respondeu :".$comando." --DESATIVA COMBUSTIVEL</p>";
                     return $comando;
                 }elseif($checkResultado[0]=="ativaCombustivel") { //--ATIVA COMBUSTIVEL - FD
-                    $comando = "*ET,".$checkResultado[1].",FD,Y2#";                
+                    $comando = "*ET,".$imeiPlataforma.",FD,Y2#";                
                     echo "<p>Servidor Respondeu :".$comando." --ATIVA COMBUSTIVEL</p>";
                     return $comando;
                 }elseif($checkResultado[0]=="ativaAlarmeCombustivel") { //--ATIVA ALARME E COMBUSTIVEL - FD
-                    $comando = "*ET,".$checkResultado[1].",FD,F1Y2#";                
+                    $comando = "*ET,".$imeiPlataforma.",FD,F1Y2#";                
                     echo "<p>Servidor Respondeu :".$comando." --ATIVA ALARME E COMBUSTIVEL</p>";
                     return $comando;
                 }elseif($checkResultado[0]=="desativaAlarmeCombustivel") { //--DESATIVA ALARME E COMBUSTIVEL - FD
-                    $comando = "*ET,".$checkResultado[1].",FD,F2Y1#";                
+                    $comando = "*ET,".$imeiPlataforma.",FD,F2Y1#";                
                     echo "<p>Servidor Respondeu :".$comando." --DESATIVA ALARME E COMBUSTIVEL</p>";
                     return $comando;
                 }elseif($checkResultado[0]=="desativaAlarmeAtivaCombustivel") { //--DESATIVA ALARME E ATIVA COMBUSTIVEL - FD
-                    $comando = "*ET,".$checkResultado[1].",FD,F2Y2#";                
+                    $comando = "*ET,".$imeiPlataforma.",FD,F2Y2#";                
                     echo "<p>Servidor Respondeu :".$comando." --DESATIVA ALARME E ATIVA COMBUSTIVEL</p>";
                     return $comando;
                 }elseif($checkResultado[0]=="ativaAlarmeDesativaCombustivel") { //--ATIVA ALARME E DESATIVA COMBUSTIVEL - FD
-                    $comando = "*ET,".$checkResultado[1].",FD,F1Y1#";                
+                    $comando = "*ET,".$imeiPlataforma.",FD,F1Y1#";                
                     echo "<p>Servidor Respondeu :".$comando." --ATIVA ALARME E DESATIVA COMBUSTIVEL</p>";
                     return $comando;
                 }else{//                                            NÃO FAZ NADA
@@ -279,13 +283,18 @@
     }
 
     function checkResposta($parts_msg){
-        if ($parts_msg[2]=="FD") {//controle de alarme e potencia
+        print_r($parts_msg);
+        if ($parts_msg[2]=="FD") {//controle de alarme e potencia            
             $resposta = $parts_msg[3];            
             $respostaComustivel = $parts_msg[4] ?? null;
             $selectCmd = dbExecute("SELECT * FROM `cmd_trackers` WHERE `imei`='$parts_msg[1]' AND `tipo` = 'FD' AND `sucesso` = false");
             if ($selectCmd->num_rows > 0 ) {
+                $resposta = removeHashtag($resposta);
+                $respostaComustivel = removeHashtag($respostaComustivel);                
                 $row = $selectCmd->fetch_assoc();
                 $cmd = $row;
+
+                echo "----cmd: ".$cmd."<br>--resposta: ".$resposta."<br>---respostaComustivel: ".$respostaComustivel;
                 $tratamento = updateCmdTrackers($cmd,$resposta,$respostaComustivel);              
                 return $tratamento;
             }else{
@@ -298,10 +307,11 @@
 
     function updateCmdTrackers($cmd,$resposta,$respostaComustivel){
         $resposta = trim($resposta);
-        $resposta = trim($respostaComustivel);
+        $respostaComustivel = trim($respostaComustivel);
         $imei = $cmd['imei'];
         $cmdTracker = $cmd['cmd'];
-        $cmdTracker = trim($cmdTracker);        
+        $cmdTracker = trim($cmdTracker);
+
         switch ($cmdTracker) {
             case "ativarAntiRoubo":
                 if ($resposta=="F10") {
@@ -334,17 +344,21 @@
                 }else{
                     return false;
                 } 
-            case "ativaCombustivel":
+            case "ativaCombustivel":                
+                
                 if ($resposta=="Y20") {
                     $result = dbExecute("UPDATE `tracker`.`cmd_trackers` SET `sucesso`='0', `resposta`='Não foi possível ativar o combustivel' WHERE `imei`='$imei' AND `tipo` = 'FD'");
                     return "NOTativaCombustivel";
-                }elseif($resposta=="Y21"){
+                }elseif($resposta == "Y21"){
                     $result = dbExecute("UPDATE `tracker`.`cmd_trackers` SET `sucesso`='1', `resposta`='Combustivel ativado com sucesso' WHERE `imei`='$imei' AND `tipo` = 'FD'");
+                    
                     return "ativaCombustivel";
                 }else{
+                    echo "<br>retornou false";
                     return false;
                 } 
             case "ativaAlarmeCombustivel":
+                echo "<br>resposta:_".$resposta."_<br>_respostaCombustive:_".$respostaComustivel."_<br>";
                 if (($resposta=="F10") &&($respostaComustivel=="Y20")) {
                     $result = dbExecute("UPDATE `tracker`.`cmd_trackers` SET `sucesso`='0', `resposta`='Não foi possível ativar o alarme e o combustivel' WHERE `imei`='$imei' AND `tipo` = 'FD'");
                     return "NOTativaAlarmeCombustivel";
