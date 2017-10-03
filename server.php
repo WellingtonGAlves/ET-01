@@ -1,5 +1,5 @@
 <?php
-    require_once ("C:/xampp/htdocs/ET-01/Util/Funcoes_comandos.php");
+    require_once ("C:/xampp/htdocs/Master-yi/Util/Funcoes_comandos.php");
     
     error_reporting(0);
     set_time_limit(0);
