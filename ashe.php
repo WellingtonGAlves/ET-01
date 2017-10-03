@@ -1,14 +1,13 @@
-<pre>
+
 <?php 
 
 
 require_once("C:/xampp/htdocs/Master-yi/Util/Config.php");
 require_once("C:/xampp/htdocs/Master-yi/dao/Connection.php");
 
-$timestamp = date("Y-m-d H:i:s");
-print_r($timestamp);
-$dataLocal = date('d/m/Y H:i:s', time());
-echo "<br>";
-print_r($dataLocal);
+$endereço = "https://maps.googleapis.com/maps/api/geocode/json?latlng=-25.474350,-49.246792&key=AIzaSyAE7rpJUJVM9h0skjf495EYANp_ohb0rNc";
+            //print_r($url);
+    		$json_endereco = json_decode(file_get_contents($endereço), true);
+    		print_r($json_endereco);
  ?>
- </pre>
+ 

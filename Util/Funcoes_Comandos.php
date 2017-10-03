@@ -18,7 +18,7 @@
 //        echo '<br>entrou para cadastrar';
         //cadastrando com informações default
         $id = dbInsert("INSERT INTO `configuracaos`(`imei`,`tolerancia`, `rastreamento_ao_vivo`, `intervalo`, `contagem`, `server_ip`, `udp_porta`, `run`, `cmd_alarme_potencia`, `cerca`, `lmt_velocidade`, `sair_suspender`, `entrar_suspender`, `sensibilidade`, `intervalo_trans_dirigindo`, `intervalo_trans_parado`, `modo_economico`, `numero_principal`, `fuso_horario`, `linguagem`, `sms`, `restart`, `status_tracker`, `ativo`) "
-                . "VALUES ($imei,null,'GZ','0005','0001','179.184.59.144','D431','1','F1Y2',FALSE,NULL,'00F0','00F0','00','05','0A','01',NULL,'3.0','01','01',FALSE,'Aguardando resposta',true)");
+                . "VALUES ($imei,null,'GZ','0005','0001','179.184.59.144','D431','1','ativaCombustivel',FALSE,NULL,'00F0','00F0','00','05','0A','01',NULL,'3.0','01','01',FALSE,'Aguardando resposta',true)");
         
 //        print_r("_".$query_insert."_");
         if($id > 0){            
@@ -336,10 +336,11 @@
                 
             case "desativaCombustivel":
                 if ($resposta=="Y10") {
-                    $result = dbExecute("UPDATE `tracker`.`cmd_trackers` SET `sucesso`='0', `resposta`='Não foi possível desativar o combustivel' WHERE `imei`='$imei' AND `tipo` = 'FD'");
+                    $result = dbExecute("UPDATE `tracker`.`cmd_trackers` SET `sucesso`='0', `resposta`='Não foi possível desativar o combustivel' WHERE `imei`='$imei' AND `tipo` = 'FD'");                    
                     return "NOTdesativaCombustivel";
                 }elseif($resposta=="Y11"){
                     $result = dbExecute("UPDATE `tracker`.`cmd_trackers` SET `sucesso`='1', `resposta`='Combustivel desativado com sucesso' WHERE `imei`='$imei' AND `tipo` = 'FD'");
+                    $result = dbExecute("UPDATE `tracker`.`configuracaos` SET `cmd_alarme_potencia`='$cmdTracker' WHERE `imei`='$imei'");
                     return "desativaCombustivel";
                 }else{
                     return false;
@@ -351,6 +352,7 @@
                     return "NOTativaCombustivel";
                 }elseif($resposta == "Y21"){
                     $result = dbExecute("UPDATE `tracker`.`cmd_trackers` SET `sucesso`='1', `resposta`='Combustivel ativado com sucesso' WHERE `imei`='$imei' AND `tipo` = 'FD'");
+                    $result = dbExecute("UPDATE `tracker`.`configuracaos` SET `cmd_alarme_potencia`='$cmdTracker' WHERE `imei`='$imei'");
                     
                     return "ativaCombustivel";
                 }else{
